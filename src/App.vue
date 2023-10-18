@@ -22,9 +22,12 @@
        const completeFunction = (task) => {
         task.complete = !task.complete
        }
-
+     
        const deleteFunction = (task) => {
-        proxyTasks.splice(task.index, 1)
+        const taskId = proxyTasks.indexOf(task)
+        if(taskId !== -1){
+          proxyTasks.splice(taskId, 1)
+        }
        }
 
        //true 
@@ -42,7 +45,7 @@
       
    <ul>
     <li v-for="task in proxyTasks" :key="task.index">
-       {{ task.text }} {{ task.complete }}
+      {{ task.text }} {{ task.complete }} 
        <button @click= "completeFunction(task)"> Complete</button>
        <button @click= "deleteFunction(task)"> Delete</button>
 
@@ -62,6 +65,7 @@
         <h1>Urađeni taskovi</h1>
         <ul v-for="trueTask in computedTaskTrue" :key="trueTask.index">
           <li>
+             
             {{trueTask.text}}
           </li>
         </ul>
