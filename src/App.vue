@@ -1,103 +1,80 @@
 <script setup>
-import { ref, computed } from 'vue';
+       import { ref, reactive, computed } from 'vue'
+     
+       const state = reactive({ count1: 0 })
+     
+       const proxyTasks = reactive([
+         { text: 'task1', complete: false},
+         { text: 'task2', complete: true},
+       ])
+     
+       const newTask = ref('') 
+     
+       const addTask = () => {
+         if( newTask !== ''){
+           proxyTasks.push({
+             text: newTask.value, 
+             complete: false
+           })
+         }
+       }
 
+       const completeFunction = (task) => {
+        task.complete = !task.complete
+       }
 
-const tasks = ref([
-  { text: 'task 1', completed: false},
-  { text: 'task 2', completed: false},
-  { text: 'task 3', completed: true},
-  { text: 'task 4', completed: true},
-  { text: 'task 5', completed: true}
-]);
+       const deleteFunction = (task) => {
+        proxyTasks.splice(task.index, 1)
+       }
 
-const newTask = ref('')
+       //true 
+       const computedTaskTrue = computed(() => {
+         return proxyTasks.filter(task => task.complete)
+       })
 
-const addTask = () => {
-  if(newTask.value !== ''){
-    tasks.value.push({
-      text: newTask.value,
-      completed: false
-    })
-  }
-}
-
-const completeTask = (task) => {
-    task.completed = !task.completed   
-}
-
-
-const showCompleted = ref(false)
-const fliterTasks = computed(() => {
-  if(showCompleted.value) {
-    return tasks.value
-  } else {
-    return tasks.value.filter(task => task.completed )
-  }
-})
-
-
-
+       //false
+       const computedTaskFalse = computed(() => {
+         return proxyTasks.filter(task => !task.complete)
+       })
+     
 </script>
-
 <template>
-  <div>
+      
+   <ul>
+    <li v-for="task in proxyTasks" :key="task.index">
+       {{ task.text }} {{ task.complete }}
+       <button @click= "completeFunction(task)"> Complete</button>
+       <button @click= "deleteFunction(task)"> Delete</button>
 
-    <h1>Task list:</h1>
-    <label for="completed"> completed </label>
-    <input type="checkBox" v-model="showCompleted.value" name="completed">
-  </div>
+   </li>
+      
+    </ul>
+      
+    <input type="text" v-model="newTask">
+    <button @click="addTask"> Add</button>
+      
+   <h1>	Counter </h1>
+    <button @click="state.count1++">
+     {{ state.count1 }}
+     </button>
+      
+      <div>
+        <h1>Urađeni taskovi</h1>
+        <ul v-for="trueTask in computedTaskTrue" :key="trueTask.index">
+          <li>
+            {{trueTask.text}}
+          </li>
+        </ul>
+      </div>
 
-  <div>
-    <ul>
-      <li v-for="task in fliterTasks" :key="task.text">
-        {{ task.text }}   {{ task.completed }}  
-       <button @click="completeTask(task) ">Complete</button>
-  
-    </li>
-  </ul>
-
-  </div>
-
-<h2>Add new task</h2>
-
-<div>
-  
-  <input type="text" v-model="newTask">
-  <button @click="addTask"> add Task</button>
-</div>
-
-  
+      <div>
+        <h1>False taskovi</h1>
+        <ul v-for="falseTask in computedTaskFalse" :key="falseTask.index">
+          <li>
+            {{falseTask.text}}
+          </li>
+        </ul>
+      </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
 
-.taskComleted{
-  text-decoration: line-through;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
